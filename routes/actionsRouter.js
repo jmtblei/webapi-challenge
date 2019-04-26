@@ -16,10 +16,11 @@ router.get("/:id", (req, res) => {
     const actionId = req.params.id;
     actionsDb.get(actionId)
     .then(response => {
-        if (!response) {
-          res.status(404).json({ message: "The action with specified ID was not found" });
+        console.log(response)
+        if (response) {
+            res.status(200).json(response);
         } else {    
-          res.status(200).json(response);
+            res.status(404).json({ message: "The action with specified ID was not found" });
         }
     })
     .catch(err => {
@@ -29,7 +30,7 @@ router.get("/:id", (req, res) => {
 
 router.post("/", (req, res) => {
     const action = req.body;
-    if (action) {
+    if (action.project_id && action.description && action.notes) {
         actionsDb.insert(action)
         .then(response => {
             res.status(200).json({ response, message: "New Action was succesfuly created"});

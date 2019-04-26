@@ -79,20 +79,19 @@ router.put("/:id", (req, res) => {
     }
 });
 
-router.get('/:projectId/actions', async (req, res) => {
+router.get('/:projectId/actions', (req, res) => {
     const { projectId } = req.params;
-    try {
-        const project = await projectsDb.get(projectId);
-        if(!project) {
-            res.status(404).json({message: "The project with specified ID could not be found"});
-        } else {
-            const actions = await actionsDb.get();
-            res.json(actions);
-        }
-    }
-    catch (err) {
-        res.status(500).json({message: "There was an error trying to retreive the actions for the provided project"})
-    }
+    projectsDb.getProjectActions(projectId)
+    .then(response => {
+      if (response.length === 0) {
+        res.status(404).json({ error: "The action with specified project ID could not be found" });
+      } else {
+        res.status(200).json(response);
+      }
+    })
+    .catch(err =>
+      res.status(500).json({ error: err, message: "There was an error trying to retreive the actions for the provided project" })
+    );
 }); 
 
 module.exports = router; 
